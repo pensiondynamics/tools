@@ -17,7 +17,7 @@ title: PDC Tools
 email: sysadmin@pensiondynamics.com
 description: >- # this means to ignore newlines until "baseurl:"
   Just some random JS tools
-baseurl: "" # the subpath of your site, e.g. /blog
+baseurl: "/tools" # the subpath of your site, e.g. /blog
 url: "https://pensiondynamics.github.io/tools/"
 
 # Build settings
