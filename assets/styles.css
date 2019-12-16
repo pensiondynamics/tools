@@ -1,0 +1,11 @@
+pre ins {
+  color: green;
+}
+
+pre del {
+  color: red;
+}
+
+pre span {
+  color: grey;
+}

@@ -1,0 +1,35 @@
+<form>
+  <div class="row">
+    <div class="col">
+      <div class="form-group">
+        <label for="diff-from">From</label>
+        <textarea id="diff-from" class="form-control diff" rows="5"></textarea>
+      </div>
+    </div>
+    <div class="col">
+      <div class="form-group">
+        <label for="diff-to">To</label>
+        <textarea id="diff-to" class="form-control diff" rows="5"></textarea>
+      </div>
+    </div>
+  </div>
+</form>
+
+<table class="table">
+  <thead>
+    <tr>
+      <th>Insertions</th>
+      <th>Deletions</th>
+      <th>No changes</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td id="insertion-count" style="color:green;"></td>
+      <td id="deletion-count" style="color:red"></td>
+      <td id="no-changes-count"></td>
+    </tr>
+  </tbody>
+</table>
+
+<pre id="diff"></pre>
