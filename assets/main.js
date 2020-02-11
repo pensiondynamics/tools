@@ -11,6 +11,8 @@ $(document).ready(function() {
     var to   = $('#leven-to').val()
     var ic   = $('#ignore-case')
     var lmt  = parseFloat($('#threshold').val())
+    var trnc = $('#truncate').val()
+    var tkn  = $('#tokenize').val()
 
     $('#leven').empty()
 
@@ -21,7 +23,7 @@ $(document).ready(function() {
       from_arry.forEach(function(from_line) {
         var similarities = to_arry.map(function(to_line) {
           var max  = Math.max(from_line.length, to_line.length)
-          var dist = levenshtein(from_line, to_line, ic.is(':checked'))
+          var dist = levenshtein(from_line, to_line, ic.is(':checked'), trnc)
           var amnt = ((max - dist) / max) * 100
 
           if (amnt > lmt) {
@@ -91,17 +93,32 @@ $(document).ready(function() {
   $('#ignore-case').prop('checked', true)
   $('#ignore-case').on('change', leven)
   $('#threshold').on('change', leven)
+  $('#truncate').on('change', leven)
 })
 
-function levenshtein(a, b, caseless) {
-  var al = a.length
-  var bl = b.length
-  var arry = []
-
+function levenshtein(a, b, caseless, truncate) {
   if (caseless) {
     a = a.toLowerCase()
     b = b.toLowerCase()
   }
+
+  if (truncate.length > 0) {
+    var regex = new RegExp(truncate)
+    var ar = a.match(regex)
+    var br = b.match(regex)
+
+    if (ar != null) {
+      a = a.substring(0, ar.index)
+    }
+
+    if (br != null) {
+      b = b.substring(0, br.index)
+    }
+  }
+
+  var al = a.length
+  var bl = b.length
+  var arry = []
 
   for (var i = 0; i <= al; i++) {
     arry[i] = []
