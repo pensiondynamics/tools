@@ -14,6 +14,12 @@ $(document).ready(function() {
     var trnc = $('#truncate').val()
     var tkn  = $('#tokenize').val()
 
+    if (trnc.length > 0) {
+      var regex = new RegExp(truncate)
+    } else {
+      var regex = null
+    }
+
     $('#leven').empty()
 
     if (from.length > 0 && to.length > 0) {
@@ -21,9 +27,23 @@ $(document).ready(function() {
       var to_arry   = to.split(/\n/)
 
       from_arry.forEach(function(from_line) {
+        if (regex) {
+          var ar = from_line.match(regex)
+          var a  = from_line.substring(0, ar.index)
+        } else {
+          var a = from_line
+        }
+
         var similarities = to_arry.map(function(to_line) {
-          var max  = Math.max(from_line.length, to_line.length)
-          var dist = levenshtein(from_line, to_line, ic.is(':checked'), trnc)
+          if (regex) {
+            var br = to_line.match(regex)
+            var b  = to_line.substring(0, ar.index)
+          } else {
+            var b = to_line
+          }
+
+          var max  = Math.max(a.length, b.length)
+          var dist = levenshtein(a, b, ic.is(':checked'))
           var amnt = ((max - dist) / max) * 100
 
           if (amnt > lmt) {
@@ -59,7 +79,11 @@ $(document).ready(function() {
   var textDiff = _.debounce(function() {
     var from = $('#diff-from').val()
     var to   = $('#diff-to').val()
-    var diff = Diff.diffChars(from, to)
+    var dmp  = new diff_match_patch()
+    var diff = dmp.diff_main(from, to)
+    // var diff = Diff.diffChars(from, to)
+
+    console.log(diff)
 
     var insertions = 0
     var deletions  = 0
@@ -67,6 +91,9 @@ $(document).ready(function() {
 
     $('#diff').empty()
 
+    dmp.diff_cleanupSemantic(diff)
+
+    /**
     diff.forEach(function(part) {
       node = document.createElement(part.added ? 'ins' : part.removed ? 'del' : 'span')
       node.appendChild(document.createTextNode(part.value))
@@ -84,6 +111,11 @@ $(document).ready(function() {
       $('#deletion-count').text(deletions)
       $('#no-changes-count').text(identicals)
     })
+    **/
+
+    var ds = dmp.diff_prettyHtml(diff)
+
+    $('#diff').html(ds)
   }, 500)
 
   $('textarea.diff').on('input', textDiff)
@@ -100,20 +132,6 @@ function levenshtein(a, b, caseless, truncate) {
   if (caseless) {
     a = a.toLowerCase()
     b = b.toLowerCase()
-  }
-
-  if (truncate.length > 0) {
-    var regex = new RegExp(truncate)
-    var ar = a.match(regex)
-    var br = b.match(regex)
-
-    if (ar != null) {
-      a = a.substring(0, ar.index)
-    }
-
-    if (br != null) {
-      b = b.substring(0, br.index)
-    }
   }
 
   var al = a.length
