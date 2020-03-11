@@ -81,9 +81,7 @@ $(document).ready(function() {
     var to   = $('#diff-to').val()
     var dmp  = new diff_match_patch()
     var diff = dmp.diff_main(from, to)
-    // var diff = Diff.diffChars(from, to)
-
-    console.log(diff)
+    var cln  = $('input[name="cleanup"]:checked').data('method')
 
     var insertions = 0
     var deletions  = 0
@@ -91,27 +89,27 @@ $(document).ready(function() {
 
     $('#diff').empty()
 
-    dmp.diff_cleanupSemantic(diff)
+    if (cln == 'semantic') {
+      dmp.diff_cleanupSemantic(diff)  
+      console.log('semantic')
+    } else if (cln == 'efficiency') {
+      dmp.diff_cleanupEfficiency(diff)
+      console.log('efficiency')
+    }
 
-    /**
     diff.forEach(function(part) {
-      node = document.createElement(part.added ? 'ins' : part.removed ? 'del' : 'span')
-      node.appendChild(document.createTextNode(part.value))
-
-      if (part.added) {
+      if (part[0] == 1) {
         insertions += 1
-      } else if (part.removed) {
+      } else if (part[0] == -1) {
         deletions += 1
       } else {
         identicals += 1
       }
 
-      $('#diff').append(node)
       $('#insertion-count').text(insertions)
       $('#deletion-count').text(deletions)
       $('#no-changes-count').text(identicals)
     })
-    **/
 
     var ds = dmp.diff_prettyHtml(diff)
 
@@ -119,6 +117,8 @@ $(document).ready(function() {
   }, 500)
 
   $('textarea.diff').on('input', textDiff)
+  $('input[name="cleanup"]').on('change', textDiff)
+  $('#semantic-cleanup').prop('checked', true)
   $('#l2s-replace').on('input', lineToString)
   $('#l2s-input').on('input', lineToString)
   $('textarea.leven').on('input', leven)
