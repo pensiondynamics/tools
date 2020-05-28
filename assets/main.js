@@ -9,7 +9,8 @@ $(document).ready(function() {
   var leven = _.debounce(function() {
     var from = $('#leven-from').val()
     var to   = $('#leven-to').val()
-    var ic   = $('#ignore-case')
+    var ic   = $('#ignore-case').is(':checked')
+    var ef   = $('#enforce-first').is(':checked')
     var lmt  = parseFloat($('#threshold').val())
     var trnc = $('#truncate').val()
     var tkn  = $('#tokenize').val()
@@ -43,7 +44,7 @@ $(document).ready(function() {
           }
 
           var max  = Math.max(a.length, b.length)
-          var dist = levenshtein(a, b, ic.is(':checked'))
+          var dist = levenshtein(a, b, ic, ef)
           var amnt = ((max - dist) / max) * 100
 
           if (amnt > lmt) {
@@ -123,12 +124,11 @@ $(document).ready(function() {
   $('#l2s-input').on('input', lineToString)
   $('textarea.leven').on('input', leven)
   $('#ignore-case').prop('checked', true)
-  $('#ignore-case').on('change', leven)
-  $('#threshold').on('change', leven)
-  $('#truncate').on('change', leven)
+
+  $('[data-change="leven"]').on('change', leven)
 })
 
-function levenshtein(a, b, caseless, truncate) {
+function levenshtein(a, b, caseless, enforce) {
   if (caseless) {
     a = a.toLowerCase()
     b = b.toLowerCase()
@@ -136,6 +136,11 @@ function levenshtein(a, b, caseless, truncate) {
 
   var al = a.length
   var bl = b.length
+
+  if (enforce && a[0] != b[0]) {
+    return Math.max(al, bl)
+  }
+
   var arry = []
 
   for (var i = 0; i <= al; i++) {
