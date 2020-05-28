@@ -38,7 +38,7 @@ $(document).ready(function() {
         var similarities = to_arry.map(function(to_line) {
           if (regex) {
             var br = to_line.match(regex)
-            var b  = to_line.substring(0, ar.index)
+            var b  = to_line.substring(0, br.index)
           } else {
             var b = to_line
           }
