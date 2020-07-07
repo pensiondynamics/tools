@@ -16,7 +16,7 @@ $(document).ready(function() {
     var tkn  = $('#tokenize').val()
 
     if (trnc.length > 0) {
-      var regex = new RegExp(truncate)
+      var regex = new RegExp(trnc)
     } else {
       var regex = null
     }
@@ -30,7 +30,13 @@ $(document).ready(function() {
       from_arry.forEach(function(from_line) {
         if (regex) {
           var ar = from_line.match(regex)
-          var a  = from_line.substring(0, ar.index)
+          var a
+
+          if (ar) {
+            a = from_line.substring(0, ar.index)
+          } else {
+            a = from_line
+          }
         } else {
           var a = from_line
         }
@@ -38,7 +44,13 @@ $(document).ready(function() {
         var similarities = to_arry.map(function(to_line) {
           if (regex) {
             var br = to_line.match(regex)
-            var b  = to_line.substring(0, br.index)
+            var b
+
+            if (br) {
+              b = to_line.substring(0, br.index)
+            } else {
+              b = to_line
+            }
           } else {
             var b = to_line
           }
@@ -53,6 +65,8 @@ $(document).ready(function() {
             return 0
           }
         })
+
+        console.log(similarities)
 
         var max = Math.max(...similarities)
         var idx = similarities.findIndex(function(value) {
@@ -168,6 +182,8 @@ function levenshtein(a, b, caseless, enforce) {
       ])
     }
   }
+
+  console.log(`${a} to ${b}: ${arry[al][bl]}`)
 
   return arry[al][bl]
 }
