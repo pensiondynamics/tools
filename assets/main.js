@@ -92,8 +92,25 @@ $(document).ready(function() {
   }, 500)
 
   var textDiff = _.debounce(function() {
-    var from = $('#diff-from').val()
-    var to   = $('#diff-to').val()
+    var from   = $('#diff-from').val()
+    var to     = $('#diff-to').val()
+    var ignore = $('#ignore').val()
+
+    if (ignore.length > 0 && from.length > 0 && to.length > 0) {
+      var regex = new RegExp(ignore)
+      
+      var from_arry = from.split(/\n/).filter(function(element) {
+        return !element.match(regex)
+      }).filter(function() { return true})
+
+      var to_arry = to.split(/\n/).filter(function(element) {
+        return !element.match(regex)
+      }).filter(function() { return true })
+
+      from = from_arry.join('\n')
+      to   = to_arry.join('\n')
+    }
+
     var dmp  = new diff_match_patch()
     var diff = dmp.diff_main(from, to)
     var cln  = $('input[name="cleanup"]:checked').data('method')
@@ -131,15 +148,15 @@ $(document).ready(function() {
     $('#diff').html(ds)
   }, 500)
 
-  $('textarea.diff').on('input', textDiff)
-  $('input[name="cleanup"]').on('change', textDiff)
-  $('#semantic-cleanup').prop('checked', true)
+  $('.diff').on('input', textDiff)
+  $('input[name="cleanup"]').on('change', textDiff)  
   $('#l2s-replace').on('input', lineToString)
   $('#l2s-input').on('input', lineToString)
   $('textarea.leven').on('input', leven)
-  $('#ignore-case').prop('checked', true)
-
   $('[data-change="leven"]').on('change', leven)
+
+  $('#ignore-case').prop('checked', true)
+  $('#semantic-cleanup').prop('checked', true)
 })
 
 function levenshtein(a, b, caseless, enforce) {
